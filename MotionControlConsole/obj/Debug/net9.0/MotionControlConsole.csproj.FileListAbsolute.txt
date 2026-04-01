@@ -1,0 +1,14 @@
+C:\Users\semio\OneDrive\Documents\New project\MotionControlConsole\obj\Debug\net9.0\MotionControlConsole.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\semio\OneDrive\Documents\New project\MotionControlConsole\obj\Debug\net9.0\MotionControlConsole.AssemblyInfoInputs.cache
+C:\Users\semio\OneDrive\Documents\New project\MotionControlConsole\obj\Debug\net9.0\MotionControlConsole.AssemblyInfo.cs
+C:\Users\semio\OneDrive\Documents\New project\MotionControlConsole\obj\Debug\net9.0\MotionControlConsole.csproj.CoreCompileInputs.cache
+C:\Users\semio\OneDrive\Documents\New project\MotionControlConsole\bin\Debug\net9.0\MotionControlConsole.exe
+C:\Users\semio\OneDrive\Documents\New project\MotionControlConsole\bin\Debug\net9.0\MotionControlConsole.deps.json
+C:\Users\semio\OneDrive\Documents\New project\MotionControlConsole\bin\Debug\net9.0\MotionControlConsole.runtimeconfig.json
+C:\Users\semio\OneDrive\Documents\New project\MotionControlConsole\bin\Debug\net9.0\MotionControlConsole.dll
+C:\Users\semio\OneDrive\Documents\New project\MotionControlConsole\bin\Debug\net9.0\MotionControlConsole.pdb
+C:\Users\semio\OneDrive\Documents\New project\MotionControlConsole\obj\Debug\net9.0\MotionControlConsole.dll
+C:\Users\semio\OneDrive\Documents\New project\MotionControlConsole\obj\Debug\net9.0\refint\MotionControlConsole.dll
+C:\Users\semio\OneDrive\Documents\New project\MotionControlConsole\obj\Debug\net9.0\MotionControlConsole.pdb
+C:\Users\semio\OneDrive\Documents\New project\MotionControlConsole\obj\Debug\net9.0\MotionControlConsole.genruntimeconfig.cache
+C:\Users\semio\OneDrive\Documents\New project\MotionControlConsole\obj\Debug\net9.0\ref\MotionControlConsole.dll

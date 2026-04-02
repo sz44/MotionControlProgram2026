@@ -4,7 +4,7 @@ namespace MotionControlConsole.Services;
 
 public sealed class ConsoleUi
 {
-    public async Task RunInputLoopAsync(DeviceManager deviceManager, ControlBridge bridge, CancellationToken cancellationToken)
+    public async Task RunInputLoopAsync(CommandRouter commandRouter, CancellationToken cancellationToken)
     {
         Console.WriteLine("Concurrent Motion Control Console");
         Console.WriteLine("Commands:");
@@ -28,28 +28,11 @@ public sealed class ConsoleUi
                 continue;
             }
 
-            if (input.Equals("exit", StringComparison.OrdinalIgnoreCase))
+            var shouldContinue = await commandRouter.HandleAsync(input, cancellationToken);
+            if (!shouldContinue)
             {
                 break;
             }
-
-            if (input.Equals("list", StringComparison.OrdinalIgnoreCase))
-            {
-                foreach (var device in deviceManager.GetDevices())
-                {
-                    Console.WriteLine($"  {device.Id} [{device.Connection.ConnectionType}] Connected={device.IsConnected}");
-                }
-
-                continue;
-            }
-
-            if (TryParseSend(input, out var deviceId, out var commandText))
-            {
-                await bridge.QueueCommandAsync(deviceId, commandText, cancellationToken);
-                continue;
-            }
-
-            Console.WriteLine("Unknown command. Use 'list', 'send <deviceId> <command>', or 'exit'.");
         }
     }
 
@@ -60,31 +43,5 @@ public sealed class ConsoleUi
             Console.WriteLine();
             Console.WriteLine($"[{deviceEvent.TimestampUtc:HH:mm:ss}] {deviceEvent.DeviceId}: {deviceEvent.Message}");
         }
-    }
-
-    private static bool TryParseSend(string input, out string deviceId, out string commandText)
-    {
-        const string prefix = "send ";
-
-        if (!input.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-        {
-            deviceId = string.Empty;
-            commandText = string.Empty;
-            return false;
-        }
-
-        var remainder = input[prefix.Length..].Trim();
-        var firstSpace = remainder.IndexOf(' ');
-
-        if (firstSpace <= 0 || firstSpace == remainder.Length - 1)
-        {
-            deviceId = string.Empty;
-            commandText = string.Empty;
-            return false;
-        }
-
-        deviceId = remainder[..firstSpace];
-        commandText = remainder[(firstSpace + 1)..].Trim();
-        return true;
     }
 }

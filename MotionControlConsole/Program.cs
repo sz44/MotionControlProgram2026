@@ -1,25 +1,25 @@
 using MotionControlConsole.Connections;
 using MotionControlConsole.Services;
 
-var bridge = new ControlBridge();
-var deviceManager = new DeviceManager(bridge);
+await using var deviceManager = new DeviceManager();
 
 await deviceManager.AddDeviceAsync("axis-x", new SimulatedConnection("axis-x"));
 await deviceManager.AddDeviceAsync("axis-y", new SimulatedConnection("axis-y"));
 
 using var appCancellation = new CancellationTokenSource();
 
-var dispatcherTask = bridge.RunCommandDispatcherAsync(deviceManager, appCancellation.Token);
 var ui = new ConsoleUi();
-var displayTask = ui.DisplayEventsAsync(bridge.EventReader, appCancellation.Token);
+var router = new CommandRouter(deviceManager);
+var displayTask = ui.DisplayEventsAsync(deviceManager.Events, appCancellation.Token);
 
-await ui.RunInputLoopAsync(deviceManager, bridge, appCancellation.Token);
-
-bridge.CompleteCommands();
-await dispatcherTask;
-bridge.CompleteEvents();
-await displayTask;
+await ui.RunInputLoopAsync(router, appCancellation.Token);
 
 appCancellation.Cancel();
 
-await deviceManager.DisposeAsync();
+try
+{
+    await displayTask;
+}
+catch (OperationCanceledException)
+{
+}

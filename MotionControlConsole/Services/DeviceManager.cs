@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Threading.Channels;
 using MotionControlConsole.Abstractions;
 using MotionControlConsole.Domain;
 
@@ -7,16 +8,13 @@ namespace MotionControlConsole.Services;
 public sealed class DeviceManager : IAsyncDisposable
 {
     private readonly ConcurrentDictionary<string, Device> _devices = new(StringComparer.OrdinalIgnoreCase);
-    private readonly ControlBridge _bridge;
+    private readonly Channel<DeviceEvent> _events = Channel.CreateUnbounded<DeviceEvent>();
 
-    public DeviceManager(ControlBridge bridge)
-    {
-        _bridge = bridge;
-    }
+    public ChannelReader<DeviceEvent> Events => _events.Reader;
 
     public async Task<Device> AddDeviceAsync(string id, IConnection connection, CancellationToken cancellationToken = default)
     {
-        var device = new Device(id, connection, _bridge.EventWriter);
+        var device = new Device(id, connection, _events.Writer);
 
         if (!_devices.TryAdd(id, device))
         {
@@ -33,14 +31,14 @@ public sealed class DeviceManager : IAsyncDisposable
         return _devices.Values.OrderBy(device => device.Id, StringComparer.OrdinalIgnoreCase).ToArray();
     }
 
-    public Task SendCommandAsync(DeviceCommand command, CancellationToken cancellationToken)
+    public Task SendCommandAsync(string deviceId, string commandText, CancellationToken cancellationToken)
     {
-        if (!_devices.TryGetValue(command.DeviceId, out var device))
+        if (!_devices.TryGetValue(deviceId, out var device))
         {
-            throw new KeyNotFoundException($"Unknown device '{command.DeviceId}'.");
+            throw new KeyNotFoundException($"Unknown device '{deviceId}'.");
         }
 
-        return device.SendCommandAsync(command.CommandText, cancellationToken);
+        return device.SendCommandAsync(commandText, cancellationToken);
     }
 
     public async ValueTask DisposeAsync()
@@ -49,5 +47,7 @@ public sealed class DeviceManager : IAsyncDisposable
         {
             await device.DisposeAsync();
         }
+
+        _events.Writer.TryComplete();
     }
 }

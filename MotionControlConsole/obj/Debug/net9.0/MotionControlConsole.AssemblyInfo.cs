@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MotionControlConsole")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+19f3ce529add461e126950dc99b32520e21e13d4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dad931cf73aa83da905e8a45ed9d553b7f774ece")]
 [assembly: System.Reflection.AssemblyProductAttribute("MotionControlConsole")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MotionControlConsole")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

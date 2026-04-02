@@ -1,15 +1,22 @@
+using MotionControlConsole.Domain;
+
 namespace MotionControlConsole.Services;
 
-public sealed class CommandRouter
+public sealed class MotionControlApp
 {
     private readonly DeviceManager _deviceManager;
 
-    public CommandRouter(DeviceManager deviceManager)
+    public MotionControlApp(DeviceManager deviceManager)
     {
         _deviceManager = deviceManager;
     }
 
-    public async Task<bool> HandleAsync(string input, CancellationToken cancellationToken)
+    public IAsyncEnumerable<DeviceEvent> ReadEventsAsync(CancellationToken cancellationToken)
+    {
+        return _deviceManager.Events.ReadAllAsync(cancellationToken);
+    }
+
+    public async Task<bool> HandleInputAsync(string input, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(input))
         {

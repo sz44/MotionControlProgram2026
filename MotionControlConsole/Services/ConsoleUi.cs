@@ -1,10 +1,8 @@
-using MotionControlConsole.Domain;
-
 namespace MotionControlConsole.Services;
 
 public sealed class ConsoleUi
 {
-    public async Task RunInputLoopAsync(CommandRouter commandRouter, CancellationToken cancellationToken)
+    public async Task StartAsync(MotionControlApp app, CancellationToken cancellationToken)
     {
         Console.WriteLine("Concurrent Motion Control Console");
         Console.WriteLine("Commands:");
@@ -13,32 +11,50 @@ public sealed class ConsoleUi
         Console.WriteLine("  exit");
         Console.WriteLine();
 
-        while (!cancellationToken.IsCancellationRequested)
+        using var uiCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        var displayTask = DisplayEventsAsync(app, uiCancellation.Token);
+
+        try
         {
-            Console.Write("> ");
-            var input = await Task.Run(Console.ReadLine, cancellationToken);
-
-            if (input is null)
+            while (!uiCancellation.Token.IsCancellationRequested)
             {
-                break;
+                Console.Write("> ");
+                var input = await Task.Run(Console.ReadLine, uiCancellation.Token);
+
+                if (input is null)
+                {
+                    break;
+                }
+
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    continue;
+                }
+
+                var shouldContinue = await app.HandleInputAsync(input, uiCancellation.Token);
+                if (!shouldContinue)
+                {
+                    break;
+                }
             }
+        }
+        finally
+        {
+            uiCancellation.Cancel();
 
-            if (string.IsNullOrWhiteSpace(input))
+            try
             {
-                continue;
+                await displayTask;
             }
-
-            var shouldContinue = await commandRouter.HandleAsync(input, cancellationToken);
-            if (!shouldContinue)
+            catch (OperationCanceledException)
             {
-                break;
             }
         }
     }
 
-    public async Task DisplayEventsAsync(System.Threading.Channels.ChannelReader<DeviceEvent> eventReader, CancellationToken cancellationToken)
+    private static async Task DisplayEventsAsync(MotionControlApp app, CancellationToken cancellationToken)
     {
-        await foreach (var deviceEvent in eventReader.ReadAllAsync(cancellationToken))
+        await foreach (var deviceEvent in app.ReadEventsAsync(cancellationToken))
         {
             Console.WriteLine();
             Console.WriteLine($"[{deviceEvent.TimestampUtc:HH:mm:ss}] {deviceEvent.DeviceId}: {deviceEvent.Message}");

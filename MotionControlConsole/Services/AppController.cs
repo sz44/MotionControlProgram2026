@@ -2,11 +2,11 @@ using MotionControlConsole.Domain;
 
 namespace MotionControlConsole.Services;
 
-public sealed class MotionControlApp
+public sealed class AppController
 {
     private readonly DeviceManager _deviceManager;
 
-    public MotionControlApp(DeviceManager deviceManager)
+    public AppController(DeviceManager deviceManager)
     {
         _deviceManager = deviceManager;
     }

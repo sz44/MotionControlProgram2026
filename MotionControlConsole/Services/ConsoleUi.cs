@@ -2,7 +2,7 @@ namespace MotionControlConsole.Services;
 
 public sealed class ConsoleUi
 {
-    public async Task StartAsync(MotionControlApp app, CancellationToken cancellationToken)
+    public async Task StartAsync(AppController app, CancellationToken cancellationToken)
     {
         Console.WriteLine("Concurrent Motion Control Console");
         Console.WriteLine("Commands:");
@@ -52,7 +52,7 @@ public sealed class ConsoleUi
         }
     }
 
-    private static async Task DisplayEventsAsync(MotionControlApp app, CancellationToken cancellationToken)
+    private static async Task DisplayEventsAsync(AppController app, CancellationToken cancellationToken)
     {
         await foreach (var deviceEvent in app.ReadEventsAsync(cancellationToken))
         {
